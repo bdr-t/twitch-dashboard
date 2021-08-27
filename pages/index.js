@@ -5,71 +5,63 @@ import styles from "../styles/Home.module.css";
 import StreamerGrid from "../components/StreamerGrid";
 
 const Home = () => {
-  let path;
+  let path = `http://localhost:3000`;
 
   //State
   const [favoriteChannels, setFavoriteChannels] = useState([]);
+  const [localStorage, setLocalStorage] = useState(false)
 
   //Effects
   useEffect(() => {
-    path = `https://${window.location.hostname}:3000`
-  },[])
+    // path = ;
+  }, []);
 
   useEffect(() => {
-    fetchChannels()
+    fetchChannels();
   }, []);
+
+  useEffect(()=>{
+    let values = window.localStorage.getItem('CHANNELS').replace(/\[|\]/g, "").split(",");
+    if(localStorage){
+      values.push(localStorage)
+      window.localStorage.setItem('CHANNELS', values)
+      setLocalStorage(false)
+    }
+  },[localStorage])
 
   // Actions
 
   const fetchChannels = async () => {
+    let channels = window.localStorage.getItem("CHANNELS");
+
     try {
-      //Get keys from db
-      const response = await fetch(`${path}/api/database`, {
-        method: 'POST',
-        body: JSON.stringify({
-          action: 'GET_CHANNELS',
-          key: 'CHANNELS',
-        })
-      })
-
-      if (response.status === 404) {
-        console.log('Chanels key could not be found')
-      }
-
-      const json = await response.json()
-
-      
-
-      if (json.data) {
-        const channelNames = json.data.split(',')
-
+      //Get keys from localstorage
+      if (channels) {
+        const channelNames = channels.replace(/\[|\]/g, "").split(",");
         //Get twitch data and set in channels State
-        const channelData = []
+        const channelData = [];
 
         for await (let channelName of channelNames) {
           const channelResp = await fetch(`${path}/api/twitch`, {
-            method: 'POST',
+            method: "POST",
             headers: {
-              'Content-Type': 'application/json'
+              "Content-Type": "application/json",
             },
-            body: JSON.stringify({ data: channelName })
-          })
+            body: JSON.stringify({ data: channelName }),
+          });
 
-          const json = await channelResp.json()
+          const json = await channelResp.json();
 
           if (json.channelData) {
-            channelData.push(json.channelData)
+            channelData.push(json.channelData);
           }
         }
-        setFavoriteChannels(channelData)
+        setFavoriteChannels(channelData);
       }
-
     } catch (error) {
-      console.warn(error.message)
+      console.warn(error.message);
     }
-  }
-
-
+  };
 
   const setChannel = async (channelName) => {
     try {
@@ -80,15 +72,15 @@ const Home = () => {
 
       const streamerList = [...currentStreamers, channelName].join(",");
 
-
-
-      const response = await fetch(`${path}/api/database`, {
-        method: "POST",
-        body: JSON.stringify({
-          key: "CHANNELS",
-          value: streamerList,
-        }),
-      });
+      if (typeof window !== "undefined") {
+        const response = await fetch(`${path}/api/database`, {
+          method: "POST",
+          body: JSON.stringify({
+            key: "CHANNELS",
+            value: streamerList,
+          }),
+        });
+      }
 
       if (response.status === 200) {
         console.log(`Set ${channelName} in db`);
@@ -115,6 +107,8 @@ const Home = () => {
       });
 
       const json = await response.json();
+
+      setLocalStorage((json.channelData.display_name))
 
       setFavoriteChannels((prevState) => [...prevState, json.channelData]);
 

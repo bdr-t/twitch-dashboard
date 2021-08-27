@@ -1,56 +1,53 @@
-import Image from 'next/image'
-import styles from '../styles/StreamerGrid.module.css'
+import Image from "next/image";
+import styles from "../styles/StreamerGrid.module.css";
+import { useState, useEffect } from "react";
 const StreamerGrid = ({ channels, setChannels }) => {
+  // State
+  const [localStorage, setLocalStorage] = useState(false);
+
+  //effect
+  useEffect(() => {
+    if (localStorage) {
+      window.localStorage.setItem("CHANNELS", localStorage);
+      setLocalStorage(false);
+    }
+  }, [localStorage]);
+
   //Actions
-  const removeChannelAction = channelId => async () => {
-    const filteredChannels = channels.filter(channel => channel.id !== channelId)
+  const removeChannelAction = (channelId) => async () => {
+    const filteredChannels = channels.filter(
+      (channel) => channel.id !== channelId
+    );
 
-    setChannels(filteredChannels)
+    setChannels(filteredChannels);
 
-    const joinedChannels = filteredChannels.map(channel => channel.display_name.toLowerCase()).join(",")
+    const joinedChannels = filteredChannels
+      .map((channel) => channel.display_name.toLowerCase())
+      .join(",");
+    setLocalStorage(joinedChannels);
+  };
 
-    await setDBChannels(joinedChannels)
-  }
-
-  const setDBChannels = async channels => {
-    try {
-      const path = `https://${window.location.hostname}`
-
-      const response = await fetch(`${path}/api/database`, {
-        method: 'POST',
-        body: JSON.stringify({
-          key: 'CHANNELS',
-          value: channels,
-        })
-      })
-      if (response.status === 200){
-        console.log(`Set ${channles} in DB`)
-      } 
-    } catch (error){
-        console.log(error.message)
-      }
-  }
 
   //RenderMethod
-  const renderGridItem = channel => (
+  const renderGridItem = (channel) => (
     <div key={channel.id} className={styles.gridItem}>
       <button onClick={removeChannelAction(channel.id)}>X</button>
-      <Image layout='fill' src={channel.thumbnail_url} alt='' />
+      <Image layout="fill" src={channel.thumbnail_url} alt="" />
       <div className={styles.gridItemContent}>
         <p>{channel.display_name}</p>
         {channel.is_live && <p>🔴 Live now!</p>}
         {!channel.is_live && <p>⚫ Offline</p>}
       </div>
     </div>
-  )
+  );
 
   const renderNoItems = () => {
     return (
       <div className={styles.gridNoItems}>
         <p> Add a streamer to get Started</p>
       </div>
-    )
-  }
+    );
+  };
 
   return (
     <div>
@@ -58,8 +55,7 @@ const StreamerGrid = ({ channels, setChannels }) => {
       {channels.length > 0 && channels.map(renderGridItem)}
       {channels.length === 0 && renderNoItems()}
     </div>
+  );
+};
 
-  )
-}
-
-export default StreamerGrid
+export default StreamerGrid;

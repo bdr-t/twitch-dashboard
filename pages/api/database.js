@@ -1,6 +1,5 @@
 // These are database actions needed to interact with Replit DB!
 // Feel free to see how this works or how to make it better!
-const DB_URL = process.env.DB_URL;
 
 // eslint-disable-next-line import/no-anonymous-default-export
 export default async (req, res) => {
@@ -34,14 +33,19 @@ export default async (req, res) => {
 // Actions
 const setKey = async (key, value) => {
   try {
-    window.localStorage.setItem(key, value);
+    if (typeof window !== "undefined") {
+      window.localStorage.setItem('hola', value);
+    }
   } catch (err) {
     console.log(err);
   }
 };
 
 const getValue = async (key) => {
+
   try {
+    let values = await window.localStorage.getItem(key);
+    console.log(values);
     return window.localStorage.getItem(key);
   } catch (err) {
     console.warn(err.message);
