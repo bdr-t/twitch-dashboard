@@ -1,7 +1,8 @@
 // These are database actions needed to interact with Replit DB!
 // Feel free to see how this works or how to make it better!
-const DB_URL = process.env.NEXT_PUBLIC_DB_URL;
+const DB_URL = process.env.DB_URL;
 
+// eslint-disable-next-line import/no-anonymous-default-export
 export default async (req, res) => {
   try {
     if (req.method === "POST") {
@@ -15,21 +16,8 @@ export default async (req, res) => {
           } else {
             res.status(404).send();
           }
-        } else if (action === "DELETE_CHANNEL") {
-          const keyValue = await getValue("CHANNELS");
-          if (keyValue) {
-            const valArray = keyValue.split(",");
-            const channelIndex = valArray.indexOf(value);
-
-            if (channelIndex !== -1) {
-              valArray.splice(channelIndex, 1);
-            } else {
-              res.status(404).send();
-            }
-
-            res.status(200).json({ data: valArray.join(",") });
-          }
         } else {
+          console.log("SE EJECUTA ESTE CODIGO");
           const success = await setKey(key, value);
           if (success) {
             res.status(200).send();
@@ -46,30 +34,15 @@ export default async (req, res) => {
 // Actions
 const setKey = async (key, value) => {
   try {
-    const result = await fetch(DB_URL, {
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-      },
-      method: "POST",
-      body: `${key}=${value}`,
-    });
-
-    if (result.status === 200) {
-      return true;
-    }
+    window.localStorage.setItem(key, value);
   } catch (err) {
-    console.warn(err.message);
+    console.log(err);
   }
 };
 
 const getValue = async (key) => {
   try {
-    const result = await fetch(`${DB_URL}/${key}`);
-    const textData = await result.text();
-
-    if (result.status === 200) {
-      return textData;
-    }
+    return window.localStorage.getItem(key);
   } catch (err) {
     console.warn(err.message);
     return false;
