@@ -23,8 +23,12 @@ const Home = () => {
   useEffect(() => {
     let values = window.localStorage
       .getItem("CHANNELS")
-      .replace(/\[|\]/g, "")
+    
+    if(values){
+      values = values.replace(/\[|\]/g, "")
       .split(",");
+    }
+      
 
     if (localStorage) {
       if (values[0] === "") {
