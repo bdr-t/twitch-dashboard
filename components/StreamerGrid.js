@@ -7,7 +7,7 @@ const StreamerGrid = ({ channels, setChannels }) => {
 
   //effect
   useEffect(() => {
-    if (localStorage) {
+    if (localStorage || localStorage === "") {
       window.localStorage.setItem("CHANNELS", localStorage);
       setLocalStorage(false);
     }
@@ -21,12 +21,17 @@ const StreamerGrid = ({ channels, setChannels }) => {
 
     setChannels(filteredChannels);
 
-    const joinedChannels = filteredChannels
-      .map((channel) => channel.display_name.toLowerCase())
-      .join(",");
+    let joinedChannels;
+
+    if (filteredChannels === 1) {
+      joinedChannels = filteredChannels;
+    } else {
+      joinedChannels = filteredChannels
+        .map((channel) => channel.display_name.toLowerCase())
+        .join(",");
+    }
     setLocalStorage(joinedChannels);
   };
-
 
   //RenderMethod
   const renderGridItem = (channel) => (
@@ -34,9 +39,10 @@ const StreamerGrid = ({ channels, setChannels }) => {
       <button onClick={removeChannelAction(channel.id)}>X</button>
       <Image layout="fill" src={channel.thumbnail_url} alt="" />
       <div className={styles.gridItemContent}>
+        {channel.is_live && <p>🔴 Live!</p>}
+      </div>
+      <div className={styles.gridItemName}>
         <p>{channel.display_name}</p>
-        {channel.is_live && <p>🔴 Live now!</p>}
-        {!channel.is_live && <p>⚫ Offline</p>}
       </div>
     </div>
   );
@@ -50,10 +56,12 @@ const StreamerGrid = ({ channels, setChannels }) => {
   };
 
   return (
-    <div>
-      <h2>{`Bader's Twitch Dashboard 😎`}</h2>
-      {channels.length > 0 && channels.map(renderGridItem)}
-      {channels.length === 0 && renderNoItems()}
+    <div className={styles.container}>
+      <h2 className={styles.streamerGridTitle}>{`My Twitch Dashboard 😎`}</h2>
+      <div className={styles.streamerGridContainer}>
+        {channels.length > 0 && channels.map(renderGridItem)}
+        {channels.length === 0 && renderNoItems()}
+      </div>
     </div>
   );
 };

@@ -31,15 +31,6 @@ export default async (req, res) => {
 };
 
 // Actions
-const setKey = async (key, value) => {
-  try {
-    if (typeof window !== "undefined") {
-      window.localStorage.setItem('hola', value);
-    }
-  } catch (err) {
-    console.log(err);
-  }
-};
 
 const getValue = async (key) => {
 

@@ -5,29 +5,38 @@ import styles from "../styles/Home.module.css";
 import StreamerGrid from "../components/StreamerGrid";
 
 const Home = () => {
-  let path = `http://localhost:3000`;
+  let path
 
   //State
   const [favoriteChannels, setFavoriteChannels] = useState([]);
-  const [localStorage, setLocalStorage] = useState(false)
+  const [localStorage, setLocalStorage] = useState(false);
 
   //Effects
   useEffect(() => {
-    // path = ;
+    path = `https://${window.location.hostname}`
   }, []);
 
   useEffect(() => {
     fetchChannels();
   }, []);
 
-  useEffect(()=>{
-    let values = window.localStorage.getItem('CHANNELS').replace(/\[|\]/g, "").split(",");
-    if(localStorage){
-      values.push(localStorage)
-      window.localStorage.setItem('CHANNELS', values)
-      setLocalStorage(false)
+  useEffect(() => {
+    let values = window.localStorage
+      .getItem("CHANNELS")
+      .replace(/\[|\]/g, "")
+      .split(",");
+
+    if (localStorage) {
+      if(values[0] === '') {
+        values = localStorage
+      } else {
+        values.push(localStorage);
+      }
+      
+      window.localStorage.setItem("CHANNELS", values);
+      setLocalStorage(false);
     }
-  },[localStorage])
+  }, [localStorage]);
 
   // Actions
 
@@ -70,7 +79,12 @@ const Home = () => {
         channel.display_name.toLowerCase()
       );
 
-      const streamerList = [...currentStreamers, channelName].join(",");
+      let streamerList;
+      if (currentStreamers.length === 1) {
+        streamerList = currentStreamers;
+      } else {
+        streamerList = [...currentStreamers, channelName].join(",");
+      }
 
       if (typeof window !== "undefined") {
         const response = await fetch(`${path}/api/database`, {
@@ -108,7 +122,7 @@ const Home = () => {
 
       const json = await response.json();
 
-      setLocalStorage((json.channelData.display_name))
+      setLocalStorage(json.channelData.display_name);
 
       setFavoriteChannels((prevState) => [...prevState, json.channelData]);
 
@@ -121,14 +135,16 @@ const Home = () => {
   const renderForm = () => {
     return (
       <div className={styles.formContainer}>
-        <form onSubmit={addStreamChannel}>
+        <form onSubmit={addStreamChannel} autoComplete="off">
           <input
             id="name"
             placeholder="Twitch Channel Name"
             type="text"
             required
           />
-          <button type="sumbit">Add Streamer</button>
+          <h2 className={styles.title}>
+            Type your favorite Twitch Channel above to add it to your list!
+          </h2>
         </form>
       </div>
     );

@@ -1,12 +1,12 @@
 // This is where all the logic for your Twitch API will live!
 // eslint-disable-next-line import/no-anonymous-default-export
 export default async (req, res) => {
-  console.log('TWITCH ENDPOINT')
+
     try {
       if (req.method === 'POST') {
-        console.log('POST ON TWITCH ENDPOINT')
+
         const { data } = req.body
-        console.log('DATA: ', data)
+    
         const channelData = await getTwitchChannel(data)
         if (channelData) {
           res.status(200).json({ channelData })
@@ -36,16 +36,16 @@ export default async (req, res) => {
   
   const getTwitchChannel = async  channelName => {
 
-    console.log('GET TWITCH CHANNEL')
+ 
     if(channelName){
       //Get acces token
       const accesToken = await getTwitchAccesToken()
-      console.log('ACCES TOKEN', accesToken)
+  
   
       if(accesToken) {
         //Make query request
 
-        console.log('MAKING SEARCH ON API TWITCH')
+  
 
         const response = await fetch(`https://api.twitch.tv/helix/search/channels?query=${channelName}`, {
           headers: {
