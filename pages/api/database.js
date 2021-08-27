@@ -31,9 +31,7 @@ export default async (req, res) => {
 };
 
 // Actions
-
 const getValue = async (key) => {
-
   try {
     let values = await window.localStorage.getItem(key);
     console.log(values);

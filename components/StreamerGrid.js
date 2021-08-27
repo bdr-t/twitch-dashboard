@@ -18,11 +18,8 @@ const StreamerGrid = ({ channels, setChannels }) => {
     const filteredChannels = channels.filter(
       (channel) => channel.id !== channelId
     );
-
     setChannels(filteredChannels);
-
     let joinedChannels;
-
     if (filteredChannels === 1) {
       joinedChannels = filteredChannels;
     } else {

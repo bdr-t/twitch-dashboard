@@ -5,7 +5,7 @@ import styles from "../styles/Home.module.css";
 import StreamerGrid from "../components/StreamerGrid";
 
 const Home = () => {
-  let path
+  let path;
 
   //State
   const [favoriteChannels, setFavoriteChannels] = useState([]);
@@ -13,7 +13,7 @@ const Home = () => {
 
   //Effects
   useEffect(() => {
-    path = `https://${window.location.hostname}`
+    path = `https://${window.location.hostname}`;
   }, []);
 
   useEffect(() => {
@@ -27,12 +27,12 @@ const Home = () => {
       .split(",");
 
     if (localStorage) {
-      if(values[0] === '') {
-        values = localStorage
+      if (values[0] === "") {
+        values = localStorage;
       } else {
         values.push(localStorage);
       }
-      
+
       window.localStorage.setItem("CHANNELS", values);
       setLocalStorage(false);
     }
