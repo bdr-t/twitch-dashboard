@@ -87,7 +87,7 @@ const Home = () => {
       }
 
       if (typeof window !== "undefined") {
-        const response = await fetch(`${window.location.hostname}/api/database`, {
+        const response = await fetch(`/api/database`, {
           method: "POST",
           body: JSON.stringify({
             key: "CHANNELS",
@@ -112,7 +112,7 @@ const Home = () => {
 
     if (value) {
       // Call Twitch Search API
-      const response = await fetch(`${window.location.hostname}/api/twitch`, {
+      const response = await fetch(`/api/twitch`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
