@@ -7,7 +7,6 @@ import StreamerGrid from "../components/StreamerGrid";
 const Home = () => {
   //State
   const [favoriteChannels, setFavoriteChannels] = useState([]);
-  const [localStorage, setLocalStorage] = useState(false);
 
   //Effects
 
@@ -18,24 +17,16 @@ const Home = () => {
     fetchChannels();
   }, []);
 
-  useEffect(() => {
-    let values = window.localStorage.getItem("CHANNELS");
 
-    if (values) {
-      values = values.replace(/\[|\]/g, "").split(",");
+  useEffect(()=>{
+    let values = ''
+    for(let channel of favoriteChannels){
+      values+= channel.display_name + ','
     }
+    values = values.slice(0, length-1);
+    window.localStorage.setItem('CHANNELS', values)
+  },[favoriteChannels])
 
-    if (localStorage) {
-      if (values[0] === "") {
-        values = localStorage;
-      } else {
-        values.push(localStorage);
-      }
-
-      window.localStorage.setItem("CHANNELS", values);
-      setLocalStorage(false);
-    }
-  }, [localStorage]);
 
   // Actions
 
@@ -50,7 +41,6 @@ const Home = () => {
         const channelData = [];
 
         for await (let channelName of channelNames) {
-          console.log(window.location.hostname)
           const channelResp = await fetch(`/api/twitch`, {
             method: "POST",
             headers: {
@@ -73,19 +63,17 @@ const Home = () => {
   };
 
   const setChannel = async (channelName) => {
+    //Get all the current streamers names in the list
+    const currentStreamers = favoriteChannels.map((channel) =>
+      channel.display_name.toLowerCase()
+    );
 
-      //Get all the current streamers names in the list
-      const currentStreamers = favoriteChannels.map((channel) =>
-        channel.display_name.toLowerCase()
-      );
-
-      let streamerList;
-      if (currentStreamers.length === 1) {
-        streamerList = currentStreamers;
-      } else {
-        streamerList = [...currentStreamers, channelName].join(",");
-      }
-      setLocalStorage(streamerList)
+    let streamerList;
+    if (currentStreamers.length === 1) {
+      streamerList = currentStreamers;
+    } else {
+      streamerList = [...currentStreamers, channelName].join(",");
+    }
 
   };
 
@@ -106,8 +94,6 @@ const Home = () => {
       });
 
       const json = await response.json();
-
-      setLocalStorage(json.channelData.display_name);
 
       setFavoriteChannels((prevState) => [...prevState, json.channelData]);
 
