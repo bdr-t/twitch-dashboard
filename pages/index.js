@@ -73,7 +73,7 @@ const Home = () => {
   };
 
   const setChannel = async (channelName) => {
-    try {
+
       //Get all the current streamers names in the list
       const currentStreamers = favoriteChannels.map((channel) =>
         channel.display_name.toLowerCase()
@@ -85,23 +85,8 @@ const Home = () => {
       } else {
         streamerList = [...currentStreamers, channelName].join(",");
       }
+      setLocalStorage(streamerList)
 
-      if (typeof window !== "undefined") {
-        const response = await fetch(`/api/database`, {
-          method: "POST",
-          body: JSON.stringify({
-            key: "CHANNELS",
-            value: streamerList,
-          }),
-        });
-      }
-
-      if (response.status === 200) {
-        console.log(`Set ${channelName} in db`);
-      }
-    } catch (error) {
-      console.warn(error.message);
-    }
   };
 
   const addStreamChannel = async (event) => {
