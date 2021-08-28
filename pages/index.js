@@ -50,7 +50,8 @@ const Home = () => {
         const channelData = [];
 
         for await (let channelName of channelNames) {
-          const channelResp = await fetch(`${window.location.hostname}/api/twitch`, {
+          console.log(window.location.hostname)
+          const channelResp = await fetch(`/api/twitch`, {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
