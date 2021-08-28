@@ -17,18 +17,18 @@ const Home = () => {
   }, []);
 
   useEffect(() => {
+    if (window.localStorage.getItem("CHANNELS") === null) {
+      window.localStorage.setItem("CHANNELS", "");
+    }
     fetchChannels();
   }, []);
 
   useEffect(() => {
-    let values = window.localStorage
-      .getItem("CHANNELS")
-    
-    if(values){
-      values = values.replace(/\[|\]/g, "")
-      .split(",");
+    let values = window.localStorage.getItem("CHANNELS");
+
+    if (values) {
+      values = values.replace(/\[|\]/g, "").split(",");
     }
-      
 
     if (localStorage) {
       if (values[0] === "") {
