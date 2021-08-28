@@ -5,16 +5,11 @@ import styles from "../styles/Home.module.css";
 import StreamerGrid from "../components/StreamerGrid";
 
 const Home = () => {
-  let path;
-
   //State
   const [favoriteChannels, setFavoriteChannels] = useState([]);
   const [localStorage, setLocalStorage] = useState(false);
 
   //Effects
-  useEffect(() => {
-    path = `https://${window.location.hostname}`;
-  }, []);
 
   useEffect(() => {
     if (window.localStorage.getItem("CHANNELS") === null) {
@@ -55,7 +50,7 @@ const Home = () => {
         const channelData = [];
 
         for await (let channelName of channelNames) {
-          const channelResp = await fetch(`${path}/api/twitch`, {
+          const channelResp = await fetch(`${window.location.hostname}/api/twitch`, {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
@@ -91,7 +86,7 @@ const Home = () => {
       }
 
       if (typeof window !== "undefined") {
-        const response = await fetch(`${path}/api/database`, {
+        const response = await fetch(`${window.location.hostname}/api/database`, {
           method: "POST",
           body: JSON.stringify({
             key: "CHANNELS",
@@ -116,7 +111,7 @@ const Home = () => {
 
     if (value) {
       // Call Twitch Search API
-      const response = await fetch(`${path}/api/twitch`, {
+      const response = await fetch(`${window.location.hostname}/api/twitch`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
